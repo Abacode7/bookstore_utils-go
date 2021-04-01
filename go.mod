@@ -1,4 +1,4 @@
-module github.com/Abacode7/bookstore_utils-go
+module github.com/Abacode7/bookstore_utils-go/v2
 
 go 1.16
 
