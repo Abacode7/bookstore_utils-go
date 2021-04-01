@@ -7,9 +7,15 @@ import (
 )
 
 var (
-	logger *zap.Logger
+	loggerImpl  bsLogger
 )
 
+type BSLogger interface {
+}
+
+type bsLogger struct {
+	log *zap.Logger
+}
 
 func init() {
 	logConfig := zap.Config{
@@ -25,23 +31,24 @@ func init() {
 			EncodeCaller: zapcore.ShortCallerEncoder,
 		},
 	}
-	var err error
-	logger, err = logConfig.Build()
+	zapLogger, err := logConfig.Build()
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	loggerImpl = bsLogger{log: zapLogger}
 }
 
 /// Info prints an info level log with message
 func Info(message string, tag ...zap.Field) {
-	logger.Info(message, tag...)
-	logger.Sync()
+	loggerImpl.log.Info(message, tag...)
+	loggerImpl.log.Sync()
 }
 
 /// Error prints an error level log with message and error
 func Error(message string, err error, tag ...zap.Field) {
 	zapErr := zap.NamedError("error", err)
 	tag = append(tag, zapErr)
-	logger.Error(message, tag...)
-	logger.Sync()
+	loggerImpl.log.Error(message, tag...)
+	loggerImpl.log.Sync()
 }
